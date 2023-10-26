@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import sys
-application = Flask(__name__)
+application = Flask(__name__, static_url_path='/static', static_folder='static')
 
 @application.route("/")
 def hello():
@@ -42,7 +42,6 @@ def reg_item_submit_post():
     data=request.form
     return render_template("submit_item_result.html", data=data,
 img_path="static/images/{}".format(image_file.filename))
-
 
 if __name__ == "__main__":
  application.run(host='0.0.0.0', debug=True)
