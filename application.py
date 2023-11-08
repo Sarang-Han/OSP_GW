@@ -32,8 +32,7 @@ def reg_item_submit():
     card=request.args.get("card")
     status=request.args.get("status")
     phone=request.args.get("phone")
-    print(name,addr,tel,category,park,time,site)
-#return render_template("reg_item.html")
+    print(name, addr, email, category, card, status, phone)
 
 @application.route("/submit_item_post", methods=['POST'])
 def reg_item_submit_post():
