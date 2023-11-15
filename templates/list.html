@@ -9,15 +9,25 @@
 
 <table>
 <tr>
-{% for key, value in datas %}
+{% for key, value in row1 %}
+    <td onclick="location.href='/view_detail/{{key}}/';" style="cursor:pointer;">
+        <img src="static/images/{{value.img_path}}", width=140, height=200></td>
+{% endfor %}
+</tr>
+
+<tr>
+{% for key, value in row2 %}
     <td>상품이름: {{key}}</td>
 {% endfor %}
 </tr>
+
 <tr>
-{% for key, value in datas %}
-    <td><img src="static/images/{{value.img_path}}", width=140, height=200></td>
+{% for key, value in row2 %}
+    <td onclick="location.href='/view_detail/{{key}}/';" style="cursor:pointer;">
+    <img src="static/images/{{value.img_path}}", width=140, height=200></td>
 {% endfor %}
 </tr>
+
 </table>
 
 <!-- 페이지네이션을 위한 코드 시작 -->

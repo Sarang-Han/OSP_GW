@@ -3,9 +3,15 @@
 {% block section %}
 
 {% with mesg = get_flashed_messages() %}
-{% if mesg !=[] %}
-    <script>alert("{{ mesg[0] }}")</script>
-{% endif %}
+    {% if mesg !=[] %}
+        <script>alert("{{ mesg[0] }}")</script>
+    {% endif %}
+{% endwith %}
+
+{% with mesg = get_flashed_messages() %}
+        {% for message in mesg %}
+            <p>{{ message }}</p>
+        {% endfor %}
 {% endwith %}
 
 <form method="post" action="/signup_post">

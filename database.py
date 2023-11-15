@@ -68,3 +68,13 @@ class DBhandler:
         items = self.db.child("item").get().val()
         return items
     
+    def get_item_byname(self, name):
+        items = self.db.child("item").get()
+        target_value=""
+        print("###########",name)
+        for res in items.each():
+            key_value = res.key()
+            
+            if key_value == name:
+                target_value=res.val()
+        return target_value
