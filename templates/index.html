@@ -7,11 +7,19 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
+
 <body>
-<nav class="navbar">
-  <a href="/" class="navbar__logo">EwhaMarket</a>
-  <ul class="navbar__menu">
+  <nav class="navbar">
+    <div class="navbar__logo">
+      
+    <a href="/list">EwhaMarket</a>
+    </div>
+    <ul class="navbar__menu">
+    {% if session['id'] %}
+    <li><a href="/logout"><b>{{session['id']}}님 반갑습니다!</b> logout</a></li>
+    {% else %}
     <li><a href="/login">login</a></li>
+    {% endif %}
     <li><a href="/list">List</a></li>
     <li><a href="/review">Review</a></li>
     <li><a href="/reg_items">Register Items</a></li>
@@ -21,6 +29,7 @@
     <i class="fas fa-bars"></i>
   </a>
 </nav>
+
 <section>
 {% block section %}
 {% endblock section %}
