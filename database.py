@@ -67,3 +67,4 @@ class DBhandler:
     def get_items(self ):
         items = self.db.child("item").get().val()
         return items
+    
