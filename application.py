@@ -9,11 +9,19 @@ application.config["SECRET_KEY"] = "Oisobaki"
 
 @application.route("/")
 def hello():
-    return render_template("index.html")
+    #return render_template("index.html")
+    return redirect(url_for('view_list'))
 
 @application.route("/list")
 def view_list():
-    return render_template("list.html")
+    
+    data = DB.get_items() #read the table
+    tot_count = len(data)
+    
+    return render_template(
+        "list.html",
+        datas=data.items(),
+        total=tot_count)
 
 @application.route("/review")
 def view_review():

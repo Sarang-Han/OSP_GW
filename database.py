@@ -63,3 +63,7 @@ class DBhandler:
             if value['id'] == id_ and value['pw'] == pw_:
                 return True
         return False
+    
+    def get_items(self ):
+        items = self.db.child("item").get().val()
+        return items
