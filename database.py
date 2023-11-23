@@ -86,3 +86,7 @@ class DBhandler:
         }
         self.db.child("review").child(data['name']).set(review_info)
         return True
+    
+    def get_reviews(self):
+        reviews = self.db.child("review").get().val() 
+        return reviews
