@@ -19,14 +19,23 @@ def reg_item():
     return render_template("reg_items.html")
 
 
+from flask import session
+
 @application.route("/submit_item_post", methods=['POST'])
 def reg_item_submit_post():
-    image_file=request.files["file"]
+    image_file = request.files["file"]
     image_file.save("static/images/{}".format(image_file.filename))
-    data=request.form
+    data = request.form
+
+    # 세션이 있는 경우 seller id를 가져오고, 없을 경우 빈 문자열로 설정
+    seller_id = session.get('id', '')
+
+    # seller_id를 폼 데이터에 추가
+    data['seller'] = seller_id
+
     DB.insert_item(data['name'], data, image_file.filename)
-    return render_template("submit_item_result.html", 
-                           data=data, 
+    return render_template("submit_item_result.html",
+                           data=data,
                            img_path="static/images/{}".format(image_file.filename))
 
 

@@ -11,6 +11,21 @@
 {% include 'navbar.html' %}
 
 {% block section %}
+<script>
+    // 페이지가 로드되었을 때 실행되는 함수
+    window.onload = function() {
+        // seller ID 필드를 찾습니다
+        var sellerField = document.getElementById('seller');
+        // 세션에서 seller ID를 가져옵니다
+        var sellerIdFromSession = "{{ session.get('id', '') }}";
+
+        // seller ID가 세션에 있는 경우 해당 값을 seller 필드에 채웁니다
+        if (sellerIdFromSession) {
+            sellerField.value = sellerIdFromSession;
+        }
+    };
+</script>
+
 <form enctype="multipart/form-data" action="/submit_item_post" method="post">
 
 <div><br><br>
