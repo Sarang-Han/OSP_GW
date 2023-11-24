@@ -7,11 +7,30 @@ application = Flask(__name__, static_url_path='/static', static_folder='static')
 DB = DBhandler()
 application.config["SECRET_KEY"] = "Oisobaki"
 
+#메인화면
 @application.route("/")
 def hello():
     #return render_template("index.html")
     return redirect(url_for('view_list'))
 
+#상품 등록하기
+@application.route("/reg_items")
+def reg_item():
+    return render_template("reg_items.html")
+
+
+@application.route("/submit_item_post", methods=['POST'])
+def reg_item_submit_post():
+    image_file=request.files["file"]
+    image_file.save("static/images/{}".format(image_file.filename))
+    data=request.form
+    DB.insert_item(data['name'], data, image_file.filename)
+    return render_template("submit_item_result.html", 
+                           data=data, 
+                           img_path="static/images/{}".format(image_file.filename))
+
+
+#전체 상품보기
 @application.route("/list")
 def view_list():
     page = request.args.get("page", 0, type=int)
@@ -38,7 +57,30 @@ def view_list():
     page=page,
     page_count=int((item_counts/per_page)+1),
     total=item_counts)
-    
+
+#상세 상품보기
+@application.route("/view_detail/<name>/")
+def view_item_detail(name):
+    print("###name:", name)
+    data = DB.get_item_byname(str(name))
+    print("####data:", data)
+    return render_template("detail.html", name=name, data=data)
+
+
+#리뷰 등록하기
+@application.route("/reg_review", methods=['POST']) 
+def reg_review():
+    image_file=request.files["file"]
+    image_file.save("static/images/{}".format(image_file.filename))
+    data=request.form
+    DB.reg_review(data['name'], data, image_file.filename)
+    return redirect(url_for('view_review'))
+
+@application.route("/reg_review_init/<name>/") 
+def reg_review_init(name):
+    return render_template("reg_reviews.html", name=name)
+
+#전체 리뷰보기
 @application.route("/review")
 def view_review():
     page = request.args.get("page", 0, type=int) 
@@ -66,41 +108,16 @@ def view_review():
         page_count=int((item_counts/per_page)+1),
         total=item_counts)
 
-@application.route("/reg_items")
-def reg_item():
-    return render_template("reg_items.html")
+#상세 리뷰보기
+@application.route("/view_review_detail/<name>/")
+def view_review_detail(name):
+    print("###name:", name)
+    data = DB.get_review_byname(str(name))
+    print("####data:", data)
+    return render_template("view_review_detail.html", name=name, data=data)
 
-@application.route("/reg_review_init/<name>/") 
-def reg_review_init(name):
-    return render_template("reg_reviews.html", name=name)
 
-@application.route("/reg_review", methods=['POST']) 
-def reg_review():
-    data=request.form
-    DB.reg_review(data)
-    return redirect(url_for('view_review'))
-
-@application.route("/submit_item")
-def reg_item_submit():
-    name=request.args.get("name")
-    seller=request.args.get("seller")
-    addr=request.args.get("addr")
-    email=request.args.get("email")
-    category=request.args.get("category")
-    card=request.args.get("card")
-    status=request.args.get("status")
-    phone=request.args.get("phone")
-    print(name, addr, email, category, card, status, phone)
-
-@application.route("/submit_item_post", methods=['POST'])
-def reg_item_submit_post():
-    image_file=request.files["file"]
-    image_file.save("static/images/{}".format(image_file.filename))
-    data=request.form
-    DB.insert_item(data['name'], data, image_file.filename)
-    return render_template("submit_item_result.html", data=data, img_path=
-"static/images/{}".format(image_file.filename))
-
+#로그인 로그아웃 회원가입
 @application.route("/login")
 def login():
     return render_template("login.html")
@@ -137,12 +154,6 @@ def register_user():
         flash("user id already exist!")
         return render_template("/signup.html")
 
-@application.route("/view_detail/<name>/")
-def view_item_detail(name):
-    print("###name:", name)
-    data = DB.get_item_byname(str(name))
-    print("####data:", data)
-    return render_template("detail.html", name=name, data=data)
 
 if __name__ == "__main__":
  application.run(host='0.0.0.0', debug=True)
