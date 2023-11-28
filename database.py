@@ -119,3 +119,19 @@ class DBhandler:
         }
         self.db.child("heart").child(uid).child(item).set(heart_info)
         return True
+    
+    # 여기에 db에 채팅 전송하는 함수 작성
+    # 여기에 db에서 채팅 불러와 화면에 띄우는 함수 작성
+    def insert_chat_message(self, name, message, timestamp):
+        chat_info = {
+            "name": name,
+            "message": message,
+            "timestamp": timestamp
+        }
+        self.db.child("chat").push(chat_info)
+        return True
+
+    # 채팅 메시지 불러오기
+    def get_chat_messages(self):
+        chat_messages = self.db.child("chat").get().val()
+        return chat_messages

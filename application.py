@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import sys
@@ -75,6 +76,30 @@ def view_item_detail(name):
     print("####data:", data)
     return render_template("detail.html", name=name, data=data)
 
+@application.route("/chatdetail")
+def chatdetail_init():
+    return render_template("chatdetail.html")
+
+#여기에 채팅 받아와 디비 함수로 메세지 데이터 넘기는 함수 작성
+#여기에 디비함수에서 데이터 받아와 채팅화면 렌더링하는 함수 작성
+@application.route("/send_message", methods=['POST'])
+def send_message():
+    if request.method == 'POST':
+        message = request.json.get('message')
+        name = request.json.get('name')  # 클라이언트에서 사용자 이름을 전달하는 부분입니다. 필요에 따라 처리하세요.
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # DB에 채팅 메시지 저장
+        DB.insert_chat_message(name, message, timestamp)
+        
+        return jsonify({"message": message, "timestamp": timestamp}), 200
+    else:
+        return jsonify({"error": "Invalid request"}), 400
+
+@application.route("/get_chat_messages")
+def get_chat_messages():
+    messages = DB.get_chat_messages()  # DB에서 채팅 메시지를 가져옵니다.
+    return jsonify(messages)
 
 #리뷰 등록하기
 @application.route("/reg_review", methods=['POST']) 
