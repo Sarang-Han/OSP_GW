@@ -1,3 +1,4 @@
+import math
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import sys
@@ -25,7 +26,7 @@ from flask import session
 def reg_item_submit_post():
     image_file = request.files["file"]
     image_file.save("static/images/{}".format(image_file.filename))
-    data = request.form
+    data = request.form.to_dict()  # ImmutableMultiDict를 수정 가능한 딕셔너리로 변환
 
     # 세션이 있는 경우 seller id를 가져오고, 없을 경우 빈 문자열로 설정
     seller_id = session.get('id', '')
@@ -43,15 +44,27 @@ def reg_item_submit_post():
 @application.route("/list")
 def view_list():
     page = request.args.get("page", 0, type=int)
+    category = request.args.get("category", "all")
     per_page=6 # item count to display per page
     per_row=3# item count to display per row
     row_count=int(per_page/per_row)
     start_idx=per_page*page
     end_idx=per_page*(page+1)
-    data = DB.get_items() #read the table
+    if category=="all":
+        data = DB.get_items() #read the table
+    else:
+        data = DB.get_items_bycategory(category)
+    
+    data = dict(sorted(data.items(), key=lambda x: x[0], reverse=False))
     item_counts = len(data)
     data = dict(list(data.items())[start_idx:end_idx])
+    
     tot_count = len(data)
+    if item_counts<=per_page:
+        data = dict(list(data.items())[:item_counts]) 
+    else:
+        data = dict(list(data.items())[start_idx:end_idx])
+    
     for i in range(row_count):#last row
         if (i == row_count-1) and (tot_count%per_row != 0):
             locals()['data_{}'.format(i)] = dict(list(data.items())[i*per_row:])
@@ -64,8 +77,9 @@ def view_list():
     row2=locals()['data_1'].items(),
     limit=per_page,
     page=page,
-    page_count=int((item_counts/per_page)+1),
-    total=item_counts)
+    page_count=int(math.ceil(item_counts/per_page)),
+    total=item_counts,
+    category=category)
 
 #상세 상품보기
 @application.route("/view_detail/<name>/")
